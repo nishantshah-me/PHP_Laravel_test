@@ -10,30 +10,6 @@ use Illuminate\Support\Facades\Cache;
 
 class TopFans extends Controller
 {
-    public function old(Creator $creator)
-    {
-        // select count(*) as view_count, fan_id from views 
-        // inner join posts on views.post_id=posts.id where posts.creator_id=1 group by fan_id;
-        $viewCounts = DB::table('views')
-            ->select('fan_id', DB::raw('count(*) as view_count'))
-            ->join('posts', function($join) use ($creator) {
-                $join->on('posts.id', '=', 'views.post_id')
-                     ->where('posts.creator_id', '=', $creator->id);
-            })
-            ->groupBy('fan_id');
-        
-        $fans = DB::table('fans')
-            ->joinSub($viewCounts, 'view_counts', function ($join) {
-                $join->on('fans.id', '=', 'view_counts.fan_id');
-            })
-            ->orderByDesc('view_count')
-            ->get();
-
-        return view('top_fans', [
-            'fans' => $fans,
-            'creator' => $creator
-        ]);
-    }
 
     /*
         SELECT
@@ -48,7 +24,7 @@ class TopFans extends Controller
             posts.creator_id = 1
         GROUP BY views.fan_id;
     */
-    public function getTopFansByRank(Creator $creator)
+    public function __invoke(Creator $creator)
     {
         $seconds = 600;
         $key = 'fans_of_'.$creator->id;

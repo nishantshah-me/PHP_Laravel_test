@@ -18,4 +18,4 @@ use App\Models\Creator;
 Route::get('/', function () {
     return view('top_fans_index', ['creators' => Creator::all()]);
 });
-Route::get('/top_fans/{creator}', [TopFans::class,'getTopFansByRank']);
+Route::get('/top_fans/{creator}', TopFans::class);
